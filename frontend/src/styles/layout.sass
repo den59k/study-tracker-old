@@ -1,0 +1,180 @@
+@import constants
+
+.main
+	background-color: $bkg-color
+	min-height: 100vh
+	display: flex
+
+.left-menu, .list
+	width: 270px
+	background-color: white
+	border-right: 1px solid $gray-bkg
+	flex: 0 0 auto
+	padding-top: 1.7em
+	display: flex
+	flex-direction: column
+
+.left-menu .user-button
+	display: flex
+	align-items: center
+	text-align: left
+	background-color: #F6F6F6
+	padding: 12px 6px
+	border-radius: 10px
+	margin: 0 12px
+
+	img
+		height: 44px
+		border-radius: 22px
+		margin-right: 10px
+
+	svg
+		font-size: 20px
+		color: $gray
+		margin-left: auto
+
+	.sub
+		font-weight: 400
+		font-size: 0.85em
+		color: $gray
+		margin-top: 0.1em
+
+.left-menu nav
+	a
+		display: block
+		line-height: 3em
+		height: 3em
+		color: $gray
+		text-decoration: none
+		padding-left: 15px
+		margin-top: 1.8em
+		font-weight: 600
+		position: relative
+
+		&:hover
+			color: darken($gray, 20%)
+
+		svg
+			font-size: 1.7em
+			vertical-align: middle
+			margin-bottom: 0.1em
+			width: 35px
+			margin-right: 22px
+
+		
+.left-menu a.active, .list li.active
+	color: black
+	svg
+		color: $primary
+	&:before
+		content: ""
+		position: absolute
+		width: 4px
+		left: 0
+		top: 0
+		bottom: 0
+		background-color: $primary
+		border-radius: 2px
+
+
+.list
+	width: 340px
+
+	.list-header
+		display: flex
+		align-items: baseline
+		padding: 0 1.5em
+		margin-bottom: 0.8em
+
+		h3
+			font-size: 1.25em
+			margin: 0
+
+		button
+			height: 2.5em
+			padding: 0 1.5em
+			margin-left: auto
+	
+	.search-container
+		margin: 0.5em 0
+		padding: 0 1.5em
+
+	ul
+		margin: 0
+		padding: 0
+	
+	li
+		list-style-type: none
+	
+	&>ul
+		position: relative
+
+		li
+			position: relative
+			height: 4em
+			display: flex
+			padding: 0 1.5em
+
+			&:hover
+				background-color: #f5f5f5
+
+			&.active button, &.active .sub
+				color: $primary
+
+			&>button
+				text-align: left
+				flex: 1 1 auto
+				padding: 0
+
+				.sub
+					font-size: 0.9em
+					font-weight: 400
+					color: $gray
+					margin-top: 0.1em
+
+				&.more
+					flex: 0 0 auto
+					font-size: 1.8em
+					color: $gray
+					transform: translateX(5px)
+				
+.list-menu
+	position: absolute
+	background-color: white
+	right: 1em
+	display: flex
+	flex-direction: column
+	padding: 0.5em 0
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2)
+	border-radius: 0.6em
+	animation: open 0.12s
+	transform-origin: 100% 10px
+	z-index: 2
+
+	button
+		height: 2.8em
+		padding: 0 0.9em
+		text-align: left
+		font-size: 0.95em
+		display: flex
+		justify-content: space-between
+		align-items: center
+
+		svg
+			font-size: 1.6em
+			color: $gray
+			margin-left: 10px
+
+		&:not(:last-child)
+			border-bottom: 1px solid $gray-bkg
+		
+		&:hover
+			background-color: $gray-bkg
+
+@keyframes open
+	from 
+		opacity: 0
+		transform: scale(0.5)
+	to
+		opacity: 1
+		transition: scale(1)

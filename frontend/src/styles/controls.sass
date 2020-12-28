@@ -1,0 +1,345 @@
+@import constants
+
+
+button, .button
+	background: none
+	border: none
+	font-weight: 600
+	text-decoration: none
+	display: inline-block
+	&:hover
+		cursor: pointer
+
+//Это просто типичная заготовка для типичной формы
+.form
+	width: 360px
+
+	&.thin
+		width: 280px
+
+	&.label-min
+		label
+			width: 100px
+
+	&>*
+		&:not(:first-child)
+			margin-top: 25px
+
+	h2
+		text-align: center
+		margin: 0
+		margin-bottom: 2em
+		font-size: 1.4em
+
+	@media(max-width: 600px)
+		width: 280px
+
+	@media(max-width: 286px)
+		width: 95vw
+
+//Это общий класс для всех контролов
+.input, .textarea, .checkbox, .image-control
+	label
+		width: 13em
+		display: inline-block
+		font-weight: 600
+		color: $dark
+		height: 2.5em
+		line-height: 2.5em
+
+	.error
+		display: none
+		position: relative
+		padding: 3px 0
+		z-index: 3
+		svg
+			color: $error
+			font-size: 22px
+			display: block
+
+		div
+			position: absolute
+			opacity: 0
+			pointer-events: none
+			right: 14px
+			top: 80%
+			white-space: pre
+			background-color: $error
+			padding: 0 25px
+			color: white
+			font-weight: 600
+			border-radius: 7px  0 7px 7px
+			transition: opacity 0.15s, transform 0.15s
+			transform: scale(0.8)
+			transform-origin: 98% 0%
+			line-height: 2.8em
+
+		&:hover
+			div
+				opacity: 1
+				transform: none
+	
+	&.errored
+		border-color: $error
+		.error
+			display: block
+
+//Это поле ввода. Также для него определены стилистические классы
+.input, .textarea
+	width: 100%
+	border-bottom: 1px solid $light
+	display: flex
+	align-items: center
+	text-align: left
+	position: relative
+
+	&>svg
+		position: absolute
+		right: 0
+		width: 2em
+		pointer-events: none
+		font-size: 1.2em
+		color: $gray
+
+	input
+		border: none
+		flex: 1 1 auto
+		background: none
+		color: darken($dark, 15%)
+		padding: 0
+		margin: 0
+
+		&::placeholder
+			color: lighten($dark, 50%)
+
+	&.filled
+		border: none 
+		background-color: $gray-bkg
+		border-radius: 0.5em
+
+		input
+			height: 3em
+			line-height: 3em
+
+		.error
+			padding: 5px
+
+		input
+			padding-left: 1.4em
+
+		input::placeholder, textarea::placeholder
+			color: lighten($dark, 20%)
+
+	&.search input
+		height: 2.4em
+		line-height: 2.4em
+
+
+
+//Класс для textarea
+.textarea
+	border: none
+	label
+		align-self: flex-start
+
+	textarea
+		border: none
+		resize: none
+		background-color: $gray-bkg
+		border-radius: 0.5em
+		padding: 0.7em 1.1em
+		line-height: 1.5em
+		flex: 1 1 auto
+
+.checkbox
+	display: flex
+	align-items: center
+	.check
+		width: 1.6em
+		height: 1.6em
+		border: 1px solid $gray
+		border-radius: 0.5em
+		margin: 0
+		padding: 0
+		transition: 0.1s
+
+		svg
+			font-size: 1.5em
+			width: 100%
+			opacity: 0
+			transition: 0.4s
+			color: white
+
+		
+	&.active .check 
+		background-color: $primary
+		border-color: $primary
+		svg
+			opacity: 1
+			transform: scale(1.4)
+
+	.error
+		margin-left: 0.5em
+
+//Это класс сегментированной кнопки
+.segment
+	display: flex
+	border: 1px solid $light
+	height: 2.3em
+	border-radius: 0.8em
+	padding: 2px
+	position: relative
+	background-color: #FAFAFA
+
+	button 
+		flex: 1 1 100%
+		color: $gray
+		border-radius: 0.66em
+		z-index: 1
+		transition: transform 0.2s, color 0.2s
+
+		&.active
+			color: $primary
+			cursor: default
+
+
+	.cursor
+		border-radius: 0.66em
+		background-color: white
+		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45)
+		position: absolute
+		top: 2px
+		bottom: 2px
+		width: 50%
+		pointer-events: none
+		transition: left 0.2s, width 0.2s
+
+.youtube-preview
+	width: 300px
+	height: 300px*9/16
+	background-size: cover
+	background-position: center
+	position: relative
+
+	a
+		width: 60px 
+		height: 60px
+		padding: 0
+		top: 50%
+		left: 50%
+		margin-left: -30px
+		margin-top: -30px
+		position: absolute
+		opacity: 0.6
+
+		&:hover
+			opacity: 1
+		svg
+			width: 100%
+			height: 100%
+			color: white
+
+.gallery-control
+	.gallery-header 
+		display: flex
+		align-items: center
+
+		h4
+			margin-right: 20px
+			color: #515151
+			font-weight: 600
+
+		button
+			height: 2.7em
+			padding: 0 1.6em 
+
+	.gallery-list
+		display: flex
+		flex-wrap: wrap
+
+		&>button
+			position: relative
+			padding: 0
+			margin-right: 10px
+			margin-bottom: 8px
+
+			img
+				max-height: 100px
+				max-width: 200px
+				display: block
+
+			.check
+				position: absolute
+				right: 5px 
+				top: 5px
+				width: 18px
+				height: 18px
+				border: 2px solid white
+	
+				border-radius: 50%
+	
+
+				svg
+					width: 100%
+					height: 100%
+					font-size: 20px
+					display: none
+
+			&.active
+				opacity: 0.8 
+				.check
+					border-color: $primary
+					background-color: $primary
+					color: white
+					opacity: 1
+
+					svg
+						display: block
+
+.image-control
+	display: flex 
+	.buttons
+		margin-bottom: 12px
+
+		button
+			margin-right: 30px
+
+	img
+		max-width: 30vw
+		height: 25vh
+		
+
+//А здесь просто стили для всех видов кнопок
+.button, .button-stroked, .button-filled
+	height: 2.9em
+	padding: 0 3em
+	border-radius: 1.45em
+	
+	svg
+		font-size: 1.5em
+
+		margin-right: 0.3em
+		margin-left: -0.2em
+		vertical-align: top
+
+.button-stroked
+	border: 1px solid $primary
+	color: $primary
+
+.button-filled
+	background-color: $primary
+	color: white
+
+	&:hover
+		background-color: lighten($primary, 5%)
+
+	&:active
+		background-color: darken($primary, 7%)
+
+	&.red
+		background-color: $red
+
+.button
+	color: $primary
+
+	

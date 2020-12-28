@@ -1,0 +1,116 @@
+.modal-fixed
+	position: fixed
+
+.modal-black
+	position: absolute
+	top: 0
+	left: 0
+	right: 0
+	min-height: 100vh
+	background-color: rgba(0, 0, 0, 0.8)
+	z-index: 10
+	display: flex
+	align-items: center
+	justify-content: center
+	animation: openBlack 0.15s
+
+.modal
+	background-color: white
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1)
+	animation: open 0.2s
+	margin: 20px
+	min-width: 600px
+	border-radius: 15px
+	overflow: hidden
+
+	.header
+		background-color: $gray-bkg
+		overflow: hidden
+		position: relative
+
+		h3
+			font-size: 1.1em
+			margin: 0.6em
+			text-align: center
+
+		.closeButton
+			position: absolute
+			right: 0.15em
+			top: 0
+			height: 100%
+			font-size: 1.7em
+			color: darken($gray, 5%)
+			svg
+				margin-top: 0.3em
+
+			&:hover
+				color: darken($gray, 20%)
+
+	.content
+		padding: 0 26px
+
+	.buttons
+		display: flex
+		justify-content: flex-end
+		padding: 18px 26px
+
+		button
+			height: 2.8em
+			padding: 0 2.5em
+	
+	&.confirm
+		min-width: 330px
+		.content
+			text-align: center
+			padding-top: 20px
+			white-space: pre-wrap
+		.buttons 
+			justify-content: space-between
+
+			.button-filled
+				background-color: $error
+
+	&.media
+		display: flex
+		flex-direction: column
+		align-items: center
+
+		.header, .buttons
+			align-self: stretch
+
+		.segment
+			width: 400px
+			margin-top: 20px
+
+		.content
+			width: 100%
+			box-sizing: border-box
+			text-align: center
+
+		.youtube-preview
+			margin: 0 auto
+			margin-top: 20px
+
+
+.control-container
+	margin-top: 1.2em
+
+.preview-image
+	max-width: 100%
+	margin-top: 20px
+	max-height: 40vh
+	display: block
+	margin-left: auto
+	margin-right: auto
+
+@keyframes openBlack
+	from
+		opacity: 0
+	to
+		opacity: 1
+
+@keyframes open
+	from 
+		transform: scale(0.8)
+	to
+		transition: scale(1)
