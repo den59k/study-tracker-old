@@ -38,7 +38,7 @@ button, .button
 		width: 95vw
 
 //Это общий класс для всех контролов
-.input, .textarea, .checkbox, .image-control, .check-list
+.input, .textarea, .checkbox, .image-control, .check-list, .file
 	label
 		width: 13em
 		display: inline-block
@@ -401,6 +401,60 @@ button, .button
 			opacity: 1
 			transform: none
 
+.file
+	display: flex
+	
+	.button-stroked
+		padding: 0 2em
+
+		&:not(:first-child)
+			margin-top: 0.7em
+
+	.file-item
+		font-weight: 600
+		color: $dark
+		padding-top: 0.5em
+
+		svg
+			font-size: 1.1em
+			transform: translateY(0.15em)
+			color: $gray
+			padding-right: 0.2em
+
+		.delete-button
+			padding-left: 0.1em
+			svg 
+				color: $primary
+	
+.control-label-mutable
+	position: relative
+	font-weight: 600
+	margin-top: -10px
+	span
+		font-weight: 400
+		color: $dark
+	
+	text-align: center
+
+.works-control
+	display: flex
+	margin-bottom: -20px
+	flex-wrap: wrap
+	justify-content: center
+
+	button
+		border: 1px solid $light
+		color: $gray
+		border-radius: 1.15em
+		height: 2.3em
+		padding: 0 1.6em
+		text-transform: capitalize
+		margin-right: 15px
+		margin-bottom: 10px
+
+		&.active
+			border-color: $primary
+			color: $primary
 
 //А здесь просто стили для всех видов кнопок
 .button, .button-stroked, .button-filled

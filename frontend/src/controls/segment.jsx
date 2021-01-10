@@ -2,18 +2,18 @@ import React, { useState, useEffect, useRef } from 'react'
 import cn from 'classnames'
 
 export default function Segment ({className, options, form, name, style }) {
-
-	const [ cursorStyle, setCursorStyle ] = useState(null);
+	
+	const [ cursorStyle, setCursorStyle ] = useState(options.length === 2?null: { width: 100/options.length + '%' });
 	const ref = useRef(null);
 
 	const value = form.values.get(name);
 
 	useEffect(() => {														//Не то, чтобы это было прям изящно, но, думаю, пойдет
 		if(ref.current){
-			const rect = ref.current.getBoundingClientRect();
-			const offset = ref.current.offsetLeft;
+			const rect = ref.current.getBoundingClientRect()
+			const offset = ref.current.offsetLeft
 
-			setCursorStyle({ left: offset });
+			setCursorStyle({ ...cursorStyle, left: offset });
 		}
 	}, [ value ]);
 

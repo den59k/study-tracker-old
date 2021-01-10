@@ -17,7 +17,6 @@ const uploadRoutes = require('./upload')
 module.exports = function (app, db) {
 
 	app.use(bodyParser.json())
-	app.use(bodyParser.raw({ limit: '5mb', type: 'image/*' }))
 	app.use(cookieParser())
 
 	authRoutes(app, db)

@@ -11,7 +11,9 @@ import Gallery from './gallery'
 import Image from './image'
 import SegmentFlat from './segment-flat'
 import CheckList from './check-list'
-import Label from './label'
+import Works from './works'
+import File from './file'
+import { Label, LabelMutable } from './label'
 
 function getControl(name, control, form){
 
@@ -35,12 +37,24 @@ function getControl(name, control, form){
 		
 	if(control.type === 'segment')
 		return <SegmentFlat {...control} name={name} form={form}/>
+	
+	if(control.type === 'segment-2')
+	return <Segment {...control} name={name} form={form}/>
 
 	if(control.type === 'check-list')
 		return <CheckList {...control} name={name} form={form}/>
 
+	if(control.type === 'works')
+		return <Works {...control} name={name} form={form}/>
+
+	if(control.type === 'file')
+		return <File {...control} name={name} form={form}/>
+
 	if(control.type === 'label')
 		return <Label {...control}/>
+
+	if(control.type === 'label-mutable')
+		return <LabelMutable {...control} name={name} form={form}/>
 }
 
 ///Данный хук используется, когда нам нужно обозначить несколько полей, у которых также могут появляться ошибки

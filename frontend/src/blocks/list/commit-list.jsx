@@ -21,14 +21,13 @@ const map = item => ({ ...item, icon: item.avatar, title: item.surname + " " + i
 export default function CommitsList (){
 
 	const { get, push, replace } = useLocation()
-	const commitGroups = get(1)
-	const selected = get(2)
+	const commitGroup = get(1)
+	const selected = parseInt(get(2))
 
-	const url = '/api/progress/'+commitGroups+'/'
+	const url = '/api/progress/'+commitGroup+'/'
 
 	const { data } = useSWR(url, GET)
 	const mapData = useMemo(() => data? data.map(map): [], [ data ])
-	
 
 	const onSelectItem = (item) => {
 		push(item.id, 2)

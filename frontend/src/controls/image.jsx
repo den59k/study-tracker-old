@@ -2,31 +2,19 @@ import React, { useRef, useState } from 'react'
 import cn from 'classnames'
 
 import { IoMdCloudUpload } from 'react-icons/io'
+import { sendFile } from 'libs/upload'
 
 export default function Image ({className, form, label, name}){
 
 	const fileRef = useRef()
 
-	const onFileChange = (e) => {
+	const onFileChange = async  (e) => {
 		const file = e.target.files[0]
 		if(!file) return
 		e.target.value = ""
 
-		const reader = new FileReader();				//Мы еще должны превратить наше изображение в массив и сразу отправить на сервер
-		reader.onload = async () => {
-			const array = reader.result;
-
-			const headers = { 'Content-Type': file.type };
-
-			const json = await fetch('/api/upload', { method: 'POST', headers, body: array } )
-			const resp = await json.json()
-
-			if(resp.error) return
-
-			form.onChange({[name]: resp.src})
-		}
-
-		reader.readAsArrayBuffer(file)
+		const { src } = await sendFile(file, '/api/upload')
+		form.onChange({[name]: src})
 	}
 
 

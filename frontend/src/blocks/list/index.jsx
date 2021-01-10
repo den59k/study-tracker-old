@@ -47,7 +47,7 @@ export default function List ({keyProp, title, items, onAdd, menuItems, onSelect
 	//Отрисовка элемента списка
 	const mapItem = (item, group) => (
 		<li key={item[keyProp]} className={cn({"active": selected === item[keyProp]})}>
-			<button onClick={() => onSelect(item)} className={"icon" in item && "with-icon"}>
+			<button onClick={() => onSelect(item)} className={cn("icon" in item && "with-icon")}>
 				{"icon" in item && <img src={item.icon || "/images/icon.svg"} alt={item.title}/>}
 				<div className="title">{item.title}</div>
 				{item.sub && <div className="sub">{item.sub}</div>}

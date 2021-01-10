@@ -1,5 +1,4 @@
 import React from 'react'
-import { useLocation } from 'components/router'
 
 import Layout from 'components/layout'
 import { IoIosList, IoMdSchool, IoMdPeople } from 'react-icons/io'
@@ -10,7 +9,8 @@ import LabsList from 'blocks/list/labs'
 import GroupsList from 'blocks/list/groups'
 import StudentsList from 'blocks/list/students'
 import CommitGroupList from 'blocks/list/commit-groups'
-import CommitsList from 'blocks/list/commits'
+import CommitsList from 'blocks/list/commit-list'
+import Commits from 'blocks/commits.jsx'
 
 const menu = [
 	{ title: "Успеваемость", to: "progress", icon: <IoIosList/> },
@@ -32,7 +32,10 @@ export default function MainPage ({user}){
 		progress: {
 			component: <CommitGroupList/>,
 			_: {
-				component: <CommitsList/>
+				component: <CommitsList/>,
+				_: {
+					component: <Commits/>
+				}
 			}
 		},
 		subjects: {

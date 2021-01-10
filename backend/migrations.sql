@@ -92,3 +92,17 @@ CREATE TABLE students_groups (
 	group_id int,
 	PRIMARY KEY (student_id, group_id)
 );
+
+-- Третий коммит
+
+-- student_id - ид студента, который сдает. user_id - ид автора коммита
+CREATE TABLE commits (
+	id bigserial PRIMARY KEY,
+	work_id int,
+	student_id bigint,
+	user_id bigint,
+	text text,
+	files text [],
+	timestep bigint,
+	mark smallint
+);

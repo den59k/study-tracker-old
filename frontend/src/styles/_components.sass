@@ -3,3 +3,77 @@
 	height: 2px
 	background-color: $light
 	margin: 0 auto
+
+.commits
+	width: auto
+	flex: 1 1 auto
+	max-width: 700px
+	align-items: flex-start
+
+	&>button
+		margin-left: 1.5em
+		padding: 0.5em 2.2em
+
+	&>ul
+		align-self: stretch
+		padding-right: 1em
+		margin-top: 1em
+		li:hover
+			background: none
+		
+	.commit
+		display: flex
+		flex-direction: column
+		position: relative 
+		border-left: 1px solid $light
+		margin-left: 1.5em 
+		padding: 0
+		padding-left: 1em
+		padding-bottom: 1em
+		margin-top: 1.6em
+		color: $dark
+		height: auto
+
+		.commit-time
+			font-size: 0.8em
+			color: $gray
+			position: relative
+			line-height: 0.8em
+			transform: translateY(-1.4em)
+
+			&:before
+				content: ""
+				border: 2px solid $light
+				width: 0.4em
+				height: 0.4em
+				position: absolute
+				border-radius: 50%
+				left: -1.65em
+
+		.commit-title
+			font-weight: 600
+			font-size: 1.1em
+			color: black
+			margin-bottom: 0.4em
+
+			&.primary
+				color: $primary
+
+		.commit-profile
+			position: absolute
+			right: 0
+			top: 50%
+			transform: translateY(-50%)
+
+		.file-link
+			color: $primary
+			font-weight: 600
+			display: block
+			padding-top: 0.3em
+
+			svg
+				font-size: 1.4em
+				transform: translate(-0.2em, 0.2em)
+
+
+		
