@@ -11,7 +11,7 @@ export const GET = async(url) => {
 }
 
 export const REST = async (url, body, method) => {
-
+	
 	const response = await fetch(url, {
 		method: method || 'POST',
 		body: JSON.stringify(body),
@@ -20,19 +20,25 @@ export const REST = async (url, body, method) => {
 		}
 	});
 
-	const json = await response.json();
+	try{
+		const json = await response.json();
 
-	return json;
-
+		return json;
+	}catch(e){
+	
+		return { error: "error" }
+	}
 }
 
 //Функция, которая получает данные с модалки, закрывает ее и мутирует URL
-export const toREST = (url, method, mutateUrl) => {
+export const toREST = (url, method, _mutate) => {
 	return async (values) => {
-		console.log(values)
 		const resp = await REST(url, values || {}, method || 'POST')
 		if(resp.error) return 
 		closeModal()
-		mutate(mutateUrl || url)
+		if(typeof(_mutate) === 'function')
+			_mutate(resp)
+		else	
+			mutate(_mutate || url)
 	}
 }

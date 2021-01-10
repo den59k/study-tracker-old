@@ -3,7 +3,7 @@ import cn from 'classnames'
 
 import { MdErrorOutline } from 'react-icons/md'
 
-export default function Input ({form, name, label, type, className, placeholder, icon}){
+export default function Input ({form, name, label, type, className, placeholder, icon, title}){
 
 	const onChange = (e) => {
 		let value = e.target.value;

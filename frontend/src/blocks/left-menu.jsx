@@ -1,8 +1,8 @@
 import "styles/layout.sass"
 import React from 'react'
 import cn from 'classnames'
-
 import { Link, useLocation } from 'components/router'
+import { openModalProfile } from 'components/modal-window'
 
 import { IoIosArrowForward } from 'react-icons/io'
 
@@ -14,7 +14,7 @@ export default function LeftMenu ({user, menu}){
 
 	return(
 	<div className="left-menu">
-		<button className="user-button">
+		<button className="user-button" onClick={() => openModalProfile(user)}>
 			<img src={user.avatar || "/images/icon.svg"} alt="Аватар пользователя"/>
 			<div>
 				<div className="name">{user.name} {user.surname}</div>

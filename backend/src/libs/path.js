@@ -15,6 +15,6 @@ async function mv(oldPath, targetFolder){
 }
 
 fs.mkdirSync(base('db/temp'), { recursive: true })
-fs.mkdirSync(base('db/cases'), { recursive: true })
+fs.mkdirSync(base('db/images'), { recursive: true })
 
 module.exports = { base, mv }

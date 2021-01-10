@@ -4,7 +4,10 @@ function getUserData (db) {
 		const { token } = req.cookies
 		if(!token) return res.json({error: "wrong token"})
 		
-		const response = await db.query(`SELECT id, name, surname, email, role, avatar FROM users WHERE token=$1`, [ token ] )
+		const response = await db.query(
+			`SELECT user_id AS id, role, email FROM accounts WHERE token=$1`,
+			[ token ] 
+		)
 
 		if(response.rowCount === 0) return res.json({error: "wrong token"})
 

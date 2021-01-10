@@ -6,7 +6,7 @@ const properties = {
 	email: { type: "string" },
 	name: { type: "string" },
 	surname: { type: "string" },
-	role: { type: "integer" }
+	role: { type: "string" }
 }
 
 const postSchema = { properties, required: [ "email", "name", "surname", "role" ] }
@@ -14,7 +14,8 @@ const postSchema = { properties, required: [ "email", "name", "surname", "role" 
 module.exports = function(app, db) {
 	
 	app.post('/register', validate(postSchema), safe(async(req, res) => {
-		const { email, name, surname, role } = req.body
+		const { name, surname, role } = req.body
+		const email = req.body.email.toLowerCase()
 
 		const response = await createRegRequest({ email, name, surname, role }, db)
 		res.json(response)

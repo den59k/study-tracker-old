@@ -9,12 +9,18 @@ import TextArea from './textarea'
 import CheckBox from './checkbox'
 import Gallery from './gallery'
 import Image from './image'
-
+import SegmentFlat from './segment-flat'
+import CheckList from './check-list'
+import Label from './label'
 
 function getControl(name, control, form){
-	if(control.type === "text" || control.type === "number")
+
+	if(control.visible && !control.visible(form))
+		return null;
+
+	if(control.type === "text" || control.type === "number" || control.type === 'email')
 		return <Input {...control} name={name} form={form}/>
-	
+
 	if(control.type === 'textarea')
 		return <TextArea {...control} name={name} form={form}/>
 	
@@ -26,10 +32,19 @@ function getControl(name, control, form){
 
 	if(control.type === 'image')
 		return <Image {...control} name={name} form={form}/>
+		
+	if(control.type === 'segment')
+		return <SegmentFlat {...control} name={name} form={form}/>
+
+	if(control.type === 'check-list')
+		return <CheckList {...control} name={name} form={form}/>
+
+	if(control.type === 'label')
+		return <Label {...control}/>
 }
 
 ///Данный хук используется, когда нам нужно обозначить несколько полей, у которых также могут появляться ошибки
-function useForm (defaultValues){
+function useForm (defaultValues, _onChange){
 
 	const [ values, setValues ] = useState(new Map(defaultValues));
 	const [ changed, setChanged ] = useState(false);
@@ -46,7 +61,8 @@ function useForm (defaultValues){
 		if(err !== errors)
 			setErrors(err);
 		setChanged(true);
-		setValues(values.merge(obj));						//А здесь мы присваиваем новые значения
+		setValues(values => values.merge(obj));						//А здесь мы присваиваем новые значения
+		if(_onChange)	_onChange(obj)
 	}
 
 	const _setErrors = useCallback((err) => setErrors(new Map(err)), []);

@@ -1,58 +1,81 @@
 import List from './index'
 import { openModal, openModalConfirm } from 'components/modal-window'
 import { GET, toREST } from 'libs/fetch'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { useLocation } from 'components/router'
+import { workTypes } from 'libs/constants'
 
 import { IoMdCreate, IoMdTrash } from 'react-icons/io'
+import { useMemo } from 'react'
 
 
 const modalSubjects = {
-	title: { type: "text", label: "Название", placeholder: "Дисциплина" },
+	type: { type: "segment", options: workTypes, style: { fontSize: "0.95em" } },
+	title: { type: "text", label: "Название работы", placeholder: "Работа по дисциплине" },
+	theme: { type: "text", label: "Тема работы", placeholder: "Тема" },
 	description: { type: "textarea", rows: 5, placeholder: "Краткое описание" }
 }
 
-const addSubject = () => {
-	openModal("Добавление дисциплины", modalSubjects, toREST('/api/subjects'))
-}
-
-const editSubject = (subject) => {
-	openModal("Редактирование дисциплины", modalSubjects, toREST('/api/subjects/'+subject.id, 'PUT', '/api/subjects'), subject)
-}
-
-const deleteSubject = (subject) => {
-	openModalConfirm("Удалить дисциплину?", subject.title, toREST('/api/subjects/'+subject.id, 'DELETE', '/api/subjects'))
-}
-
-
-const menuItems = [
-	{ title: "Редактировать работу", icon: <IoMdCreate/>, onClick: editSubject },
-	{ title: "Удалить работу", icon: <IoMdTrash/>, onClick: deleteSubject }
-]
+const map = item => ({ ...item, sub: item.theme })
 
 export default function LabsList (){
 
-	const data = [
-		{ id: 1, title: "Лабораторная работа 1" },
-		{ id: 2, title: "Лабораторная работа 1" },
-		{ id: 3, title: "Лабораторная работа 1" },
-	]
-	const { get, push } = useLocation()
+	const { get, push, replace } = useLocation()
+	const subject = get(1)
+	const selected = get(2)
 
+	const url = '/api/subjects/'+subject+'/'
+
+	const { data } = useSWR(url, GET)
+	const mapData = useMemo(() => data? data.map(map): [], [ data ])
+
+	modalSubjects.type.onChange = (type, form) => {
+		const strType = workTypes[type]
+		const count = data.reduce((acc, item) => item.type === type? acc+1: acc, 1)					//Ее, это подсчет значений
+
+		if(type !== "other")
+			form.onChange({ title: strType+" работа " + count })
+		else
+			form.onChange({ title: "" })
+	}
+
+
+	const addWork = () => {
+		openModal("Добавление работы", modalSubjects, toREST(url), { type: "other" })
+	}
+	
+	const editWork = (work) => {
+		const mutateWork = (resp) => {
+			if(work.url === selected)
+				replace(resp.url, 2)
+			mutate(url)
+		}
+		openModal("Редактирование работы", modalSubjects, toREST(url+work.url, 'PUT', mutateWork), work)
+	}
+	
+	const deleteWork = (work) => {
+		openModalConfirm("Удалить работу?", work.title, toREST(url+work.url, 'DELETE', url))
+	}
+	
+	
+	const menuItems = [
+		{ title: "Редактировать работу", icon: <IoMdCreate/>, onClick: editWork },
+		{ title: "Удалить работу", icon: <IoMdTrash/>, onClick: deleteWork }
+	]
+	
 	const onSelectItem = (item) => {
 		push(item.url, 2)
 	}
-
-	const selected = get(2)
-
+	
 	return (
 		<List
+			keyProp="url"
 			onSelect={onSelectItem} 
 			selected={selected}
 			title="Работы" 
-			items={data} 
+			items={mapData} 
 			menuItems={menuItems} 
-			onAdd={addSubject}
+			onAdd={addWork}
 		/>
 	)
 }

@@ -39,15 +39,18 @@
 		color: $gray
 		margin-top: 0.1em
 
+	&:hover
+		background-color: darken(#F6F6F6, 2%)
+
 .left-menu nav
 	a
 		display: block
-		line-height: 3em
-		height: 3em
+		line-height: 4em
+		height: 4em
 		color: $gray
 		text-decoration: none
 		padding-left: 15px
-		margin-top: 1.8em
+		margin-top: 0.8em
 		font-weight: 600
 		position: relative
 
@@ -71,8 +74,8 @@
 		position: absolute
 		width: 4px
 		left: 0
-		top: 0
-		bottom: 0
+		top: 0.7em
+		bottom: 0.7em 
 		background-color: $primary
 		border-radius: 2px
 
@@ -96,7 +99,8 @@
 			margin-left: auto
 	
 	.search-container
-		margin: 0.5em 0
+		margin-top: 0.2em
+		margin-bottom: 0.8em
 		padding: 0 1.5em
 
 	ul
@@ -125,6 +129,18 @@
 				text-align: left
 				flex: 1 1 auto
 				padding: 0
+				position: relative
+
+				&.with-icon
+					padding-left: 3.2em
+
+					img
+						height: 2.6em
+						width: 2.6em
+						position: absolute
+						left: 0
+						top: 0.7em
+						border-radius: 50%
 
 				.sub
 					font-size: 0.9em
@@ -137,6 +153,14 @@
 					font-size: 1.8em
 					color: $gray
 					transform: translateX(5px)
+		
+		.title-group
+			height: 1.3em
+			font-weight: 600
+			font-size: 0.9em
+			padding-left: 1.7em
+			margin-top: 1em
+			pointer-events: none
 				
 .list-menu
 	position: absolute

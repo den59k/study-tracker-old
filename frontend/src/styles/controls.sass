@@ -38,7 +38,7 @@ button, .button
 		width: 95vw
 
 //Это общий класс для всех контролов
-.input, .textarea, .checkbox, .image-control
+.input, .textarea, .checkbox, .image-control, .check-list
 	label
 		width: 13em
 		display: inline-block
@@ -84,6 +84,8 @@ button, .button
 		.error
 			display: block
 
+
+
 //Это поле ввода. Также для него определены стилистические классы
 .input, .textarea
 	width: 100%
@@ -92,6 +94,10 @@ button, .button
 	align-items: center
 	text-align: left
 	position: relative
+	transition: border-color 0.2s
+
+	&:focus-within
+		border-color: $gray
 
 	&>svg
 		position: absolute
@@ -134,7 +140,11 @@ button, .button
 		height: 2.4em
 		line-height: 2.4em
 
-
+//Класс для простого текста
+.control-label
+	color: $gray
+	margin-top: -0.9em
+	font-size: 0.95em
 
 //Класс для textarea
 .textarea
@@ -151,7 +161,7 @@ button, .button
 		line-height: 1.5em
 		flex: 1 1 auto
 
-.checkbox
+.checkbox, .check-list .item
 	display: flex
 	align-items: center
 	.check
@@ -180,6 +190,21 @@ button, .button
 
 	.error
 		margin-left: 0.5em
+
+.check-list
+	display: flex
+
+	.item
+		padding: 0.5em 0
+		color: darken($gray, 10%)
+		
+		&.active
+			color: $dark
+
+		.check
+			margin-right: 0.6em
+			width: 1.4em
+			height: 1.4em
 
 //Это класс сегментированной кнопки
 .segment
@@ -308,6 +333,74 @@ button, .button
 		max-width: 30vw
 		height: 25vh
 		
+		
+//Тоже самое, что и сегмент, просто в другом стиле
+.segment-flat
+	display: flex
+	justify-content: space-between
+	overflow: hidden
+	
+	button
+		flex: 1 0 100px
+		line-height: 2.8em
+		padding: 0
+		color: $primary
+		border: 1px solid $primary
+
+		&:not(:first-child)
+			border-left: none
+
+		&:first-child
+			border-radius: 1.4em 0 0 1.4em
+
+		&:last-child
+			border-radius: 0 1.4em 1.4em 0
+
+		&.active 
+			background-color: $primary
+			color: white
+
+.image-button
+	width: 155px
+	height: 155px
+	border: 1px solid $light
+	border-radius: 9px
+	padding: 0
+	display: flex
+	justify-content: center
+	align-items: center
+	flex-direction: column
+	color: $gray
+	background-position: center
+	background-size: cover
+
+	&.uploaded 
+		color: rgba(255, 255, 255, 0.3)
+		transition: color 0.3s
+		border: none
+
+		&:hover
+			color: white
+
+	svg
+		font-size: 40px
+		transform-origin: top center
+		transform: scale(1.4)
+		transition: transform 0.3s
+
+	span
+		opacity: 0
+		transform: translateY(1em)
+		transition: opacity 0.3s, transform 0.3s
+		font-size: 0.85em
+
+	&:hover
+		svg
+			transform: none
+		span
+			opacity: 1
+			transform: none
+
 
 //А здесь просто стили для всех видов кнопок
 .button, .button-stroked, .button-filled

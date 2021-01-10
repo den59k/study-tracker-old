@@ -4,10 +4,15 @@ import { REST } from 'libs/fetch'
 
 import { Link } from 'react-router-dom'
 
+const roles = {
+	student: "Студент",
+	teacher: "Преподаватель"
+}
+
 export default function RegisterPage() {
 
 	const [ success, setSuccess ] = useState(false)
-	const form = useForm({role: 0});
+	const form = useForm({role: 'student'});
 
 	const onSubmit = async (e) => {
 		e.preventDefault()
@@ -35,7 +40,7 @@ export default function RegisterPage() {
 				<Input name="email" form={form} label="Email" placeholder="Ваш логин"/>
 				<Input name="name"  label="Имя"  form={form} placeholder="Ваше имя"/>
 				<Input name="surname" label="Фамилия"  form={form} placeholder="Ваша фамилия"/>
-				<Segment name="role" options={["Студент", "Преподаватель"]} form={form}/>
+				<Segment name="role" options={roles} form={form}/>
 				<button className="button-stroked">Продолжить</button>
 
 				<div className="h-line"></div>

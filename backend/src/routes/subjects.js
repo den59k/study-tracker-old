@@ -1,5 +1,5 @@
 const { validate, safe } = require('../libs/validate')
-const toTranslit = require('../libs/translit')
+const { toTranslit } = require('../libs/translit')
 
 const properties = {
 	title: { type: "string" },
@@ -12,7 +12,12 @@ module.exports = function(app, db) {
 	
 	app.get('/subjects', async(req, res) => {
 
-		const response = await db.query('SELECT * FROM subjects ORDER BY creation_time')
+		const response = await db.query(`
+			SELECT subjects.*, COUNT(works) AS count_works FROM subjects 
+			LEFT JOIN works ON works.subject_id=subjects.id 
+			GROUP BY subjects.id 
+			ORDER BY subjects.creation_time
+		`)
 
 		res.json(response.rows)
 	})

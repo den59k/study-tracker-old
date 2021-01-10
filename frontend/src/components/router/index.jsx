@@ -26,6 +26,12 @@ export function Router ({children}){
 		setState(newState)
 		window.history.pushState({}, '', getUrl(newState))
 	}
+
+	const replace = (to, level) => {
+		const newState = state.set(level, to)
+		setState(newState)
+		window.history.replaceState({}, '', getUrl(newState))
+	}
 	
 	//Получает роут на заданном уровне вложенности
 	const get = (level) => {
@@ -33,7 +39,7 @@ export function Router ({children}){
 	}
 
 	return (
-		<RouterContext.Provider value={{state, push, get}}>
+		<RouterContext.Provider value={{state, push, get, replace}}>
 			{children}
 		</RouterContext.Provider>
 	)

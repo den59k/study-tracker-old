@@ -33,7 +33,20 @@ async function sendTokenMail (info, token){
 	
 	const sendResponse = await sendMail(info.email, 'Регистрация в системе StudyTracker', html)
 
-	console.log(sendResponse)
 }
 
-module.exports = { sendTokenMail }
+async function sendExtTokenMail (info, token){
+	const link = process.env.ADDRESS+'/confirm/'+token
+	const html = `
+<h1>StudyTracker - система учета успеваемости</h1>
+<h3>Добрый день, ${info.name}!</h3><br/>
+Вы добавлены преподавателем в систему StudyTracker.<br/><br/>
+Для завершения регистрации вам необходмо перейти по ссылке:<br/>
+<a href=${link}>${link}</a>
+	`
+	
+	const sendResponse = await sendMail(info.email, 'Регистрация в системе StudyTracker', html)
+
+}
+
+module.exports = { sendTokenMail, sendExtTokenMail }

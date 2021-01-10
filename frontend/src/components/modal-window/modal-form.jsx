@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { getControl, useForm } from 'controls'
 
 import { modal, ModalBase } from './index'
 
 
-export function ModalForm ({title, controls, className, onSubmit, defaultValues }){
 
-	const form = useForm(defaultValues || {})
+export function ModalForm ({title, controls, className, onSubmit, defaultValues, children }){
+
+	const onChange = (obj) => {
+		for(let key in obj)
+			if(controls[key].onChange)
+				controls[key].onChange(obj[key], form)
+	}
+
+	const form = useForm(defaultValues || {}, onChange)
 
 	return (
 		<ModalBase title={title} className={className} >
@@ -21,6 +28,7 @@ export function ModalForm ({title, controls, className, onSubmit, defaultValues 
 				<button className="button" onClick={() => modal.close()}>Отмена</button>
 				<button className="button-filled" onClick={onSubmit? () => onSubmit(form.values.toObject(), form): null}>Сохранить</button>
 			</div>
+			{ children }
 		</ModalBase>
 	)
 }

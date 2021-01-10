@@ -5,8 +5,9 @@ import { IoIosClose } from 'react-icons/io'
 import { ModalForm, openModal } from './modal-form'
 import { ModalConfirm, openModalConfirm } from './modal-confirm'
 import { ModalMedia, openModalMedia } from './modal-media' 
+import { openModalProfile } from './modal-profile'
 
-export { ModalForm, openModal, ModalConfirm, openModalConfirm, ModalMedia, openModalMedia }
+export { ModalForm, openModal, ModalConfirm, openModalConfirm, ModalMedia, openModalMedia, openModalProfile }
 
 export const modal = {
 	open: () => console.log("null action openModal"),

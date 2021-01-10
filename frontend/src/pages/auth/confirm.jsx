@@ -1,17 +1,16 @@
 import React from 'react'
 import { useForm, Input, Segment } from 'controls';
-import { Link, useParams } from 'react-router-dom'
-import useSWR from 'swr'
+import { Link, useParams, useHistory } from 'react-router-dom'
+import useSWR, { mutate } from 'swr'
 import { GET, REST } from 'libs/fetch'
 
 export default function LoginPage() {
 
+	const history = useHistory();
 	const form = useForm();
 
 	const { token } = useParams()
 	const { data } = useSWR('/api/confirm/'+token, GET)
-
-	console.log(data)
 
 	if(!data)
 		return (<div></div>)
@@ -23,7 +22,7 @@ export default function LoginPage() {
 				<h2>Ваша ссылка не действительна</h2>
 			</div>
 		)
-
+			
 	const onSubmit = async (e) => {
 		e.preventDefault()
 		if(!form.get('password') || form.get('password').length < 6)
@@ -32,7 +31,11 @@ export default function LoginPage() {
 			return form.setErrors({ 'repeat-password': 'Пароли не совпадают' })
 		
 		const resp = await REST('/api/confirm/'+token, form.values.toObject(), 'POST')
-		console.log(resp)
+		
+		if(resp.count === 1){
+			mutate('/api')
+			history.push('/')
+		}
 	}
 
 	return (

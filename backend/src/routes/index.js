@@ -7,6 +7,12 @@ const getUserData = require('../libs/get-user-data')
 const baseRoutes = require('./base')
 const authRoutes = require('./auth')
 const subjectRoutes = require('./subjects')
+const workRoutes = require('./works')
+const groupRoutes = require('./groups')
+const studentRoutes = require('./students')
+const commitRoutes = require('./commits')
+
+const uploadRoutes = require('./upload')
 
 module.exports = function (app, db) {
 
@@ -20,6 +26,12 @@ module.exports = function (app, db) {
 
 	baseRoutes(app, db)
 	subjectRoutes(app, db)
+	workRoutes(app, db)
+	groupRoutes(app, db)
+	studentRoutes(app, db)
+	commitRoutes(app, db)
+
+	uploadRoutes(app, db)
 	
 	// Тут, позже, будут и другие обработчики маршрутов 
 }
