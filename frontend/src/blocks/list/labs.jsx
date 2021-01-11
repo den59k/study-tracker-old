@@ -13,7 +13,7 @@ const modalSubjects = {
 	type: { type: "segment", options: workTypes, style: { fontSize: "0.95em" } },
 	title: { type: "text", label: "Название работы", placeholder: "Работа по дисциплине" },
 	theme: { type: "text", label: "Тема работы", placeholder: "Тема" },
-	description: { type: "textarea", rows: 5, placeholder: "Краткое описание" }
+	description: { type: "textarea", rows: 5, placeholder: "Краткое описание", checkNull: true }
 }
 
 const map = item => ({ ...item, sub: item.theme })

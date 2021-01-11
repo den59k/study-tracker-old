@@ -35,17 +35,13 @@ function mapWorks(works){
 	return obj
 }
 
-export default function Commits (){
+export default function Commits ({isStudent}){
 	
 	const { get } = useLocation()
-	const commitGroup = get(1)
-	const student_id = get(2)
 
-	const url = '/api/progress/'+commitGroup+'/'+student_id+'/'
+	const url = isStudent === true?'/api/progress/'+get(1): '/api/progress/'+get(1)+'/'+get(2)+'/'
 
 	const { data } = useSWR(url, GET)
-
-	console.log(data)
 
 	modalCommit.work.items = useMemo(() => mapWorks(data && data.works), [ data ])
 	modalCommit.work.onChange = (val, form) => {
@@ -55,7 +51,7 @@ export default function Commits (){
 	modalCommit.mark.onChange = (val, form) => {
 		form.onChange({ selectedMark: markComments[val] })
 	}
-	
+		
 	const openCommitModal = () => {
 		openModal("Оценить работу", modalCommit, toREST(url, 'POST'), { mark: 0 })
 	}
@@ -65,7 +61,11 @@ export default function Commits (){
 	return (
 		<div className="list commits">
 			<div className="list-header">
-				<h3>{data.student.surname + ' '+ data.student.name}</h3>
+				{isStudent?(
+					<h3>{data.subject.title}</h3>
+				):(
+					<h3>{data.student.surname + ' '+ data.student.name}</h3>
+				)}
 			</div>
 			<button className="button-filled" onClick={openCommitModal}><IoCreateOutline/>Оценить работу</button>
 			<ul>

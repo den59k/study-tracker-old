@@ -15,6 +15,22 @@ export function ModalForm ({title, controls, className, onSubmit, defaultValues,
 
 	const form = useForm(defaultValues || {}, onChange)
 
+	const _onSubmit = () => {
+		if(!onSubmit) return
+
+		const values = {}
+
+		form.values.forEach((value, key) => {
+			if(!controls[key]) return
+			if(controls[key].checkNull && !value) return
+			if(controls[key].notSend) return
+
+			values[key] = value
+		})
+
+		onSubmit(values, form)
+	}
+	
 	return (
 		<ModalBase title={title} className={className} >
 			<div className="content">
@@ -26,7 +42,9 @@ export function ModalForm ({title, controls, className, onSubmit, defaultValues,
 			</div>
 			<div className="buttons">
 				<button className="button" onClick={() => modal.close()}>Отмена</button>
-				<button className="button-filled" onClick={onSubmit? () => onSubmit(form.values.toObject(), form): null}>Сохранить</button>
+				<button className="button-filled" onClick={_onSubmit}>
+					Сохранить
+				</button>
 			</div>
 			{ children }
 		</ModalBase>

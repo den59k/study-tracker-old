@@ -9,6 +9,8 @@ import SubjectsList from 'blocks/list/subjects'
 import LabsList from 'blocks/list/labs'
 import GroupsList from 'blocks/list/groups'
 import StudentsList from 'blocks/list/students'
+import ProgressList from 'blocks/list/progress'
+import Commits from 'blocks/commits'
 
 const menu = [
 	{ title: "Успеваемость", to: "progress", icon: <IoIosList/> },
@@ -27,7 +29,10 @@ export default function MainPage ({user}){
 	const tree = {
 		component: <LeftMenu user={user} menu={menu}/>,
 		progress: {
-			component: <SubjectsList/>,
+			component: <ProgressList/>,
+			_: {
+				component: <Commits isStudent={true}/>
+			}
 		},
 		subjects: {
 			component: <SubjectsList/>,

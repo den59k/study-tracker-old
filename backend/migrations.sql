@@ -102,7 +102,7 @@ CREATE TABLE commits (
 	student_id bigint,
 	user_id bigint,
 	text text,
-	files text [],
+	files jsonb [],
 	timestep bigint,
 	mark smallint
 );

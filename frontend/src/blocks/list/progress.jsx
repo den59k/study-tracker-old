@@ -1,16 +1,16 @@
 import List from './index'
-import { GET } from 'libs/fetch'
+import { openModal, openModalConfirm } from 'components/modal-window'
+import { GET, toREST } from 'libs/fetch'
 import useSWR from 'swr'
 import { useLocation } from 'components/router'
 import { useMemo } from 'react'
-
+import { num } from 'libs/rus'
 
 const map = item => ({ 
 	...item, 
 	id: item.subject_id+'-'+item.group_id, 
-	title: item.group_title, 
-	sub: item.subject_title,
-	url: item.group_url + '_'+item.subject_url
+	title: item.subject_title,
+	sub: num(item.count, 'работа', 'работы', 'работ')
 })
 
 function mapObject (data) {
@@ -20,21 +20,22 @@ function mapObject (data) {
 	const groups = {}
 	const mapData = {}
 
-	for(let item of data.titles){
+	console.log(data)
+
+	for(let item of data.groups){
 		groups[item.url] = item.title
 		mapData[item.url] = []
 	}
 
 	for(let subject of data.subjects)
-		mapData[subject.subject_url].push(map(subject))
+		mapData[subject.group_url].push(map(subject))
 	
 
 	return { groups, mapData }
 }
 
 
-export default function CommitGroupList (){
-
+export default function ProgressList (){
 	const { get, push } = useLocation()
 	const selected = get(1)
 
@@ -44,17 +45,17 @@ export default function CommitGroupList (){
 	const { groups, mapData } = useMemo(() => mapObject(data), [ data ])
 
 	const onSelectItem = (item) => {
-		push(item.url, 1)
+		push(item.subject_url, 1)
 	}
 	
 	return (
 		<List
-			keyProp="url"
+			keyProp="subject_url"
 			onSelect={onSelectItem} 
 			selected={selected}
-			title="Успеваемость" 
-			items={mapData} 
 			groups={groups}
+			title="Ваши дисциплины" 
+			items={mapData} 
 		/>
 	)
 }

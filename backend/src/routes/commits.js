@@ -19,16 +19,39 @@ module.exports = function(app, db) {
 			const titles = await getTeacherSubjectTitles(db, id)
 			res.json({ subjects, titles })
 		}
+
+		if(role === 'student'){
+			const subjects = await getStudentSubjects(db, id)
+			const groups = await getStudentGroups(db, id)
+			res.json({ subjects, groups })
+		}
 	})
 
 	app.get('/progress/:url', async(req, res) => {
-		const [ group_url, subject_url ] = req.params.url.split('_')
 
-		if(!subject_url) return res.json({error: "wrong subject_url"})
+		if(req.user.role === 'teacher'){
+			const [ group_url, subject_url ] = req.params.url.split('_')
 
-		const response = await getStudents(db, group_url, subject_url)
-		
-		res.json(response)
+			if(!subject_url) return res.json({error: "wrong subject_url"})
+
+			const response = await getStudents(db, group_url, subject_url)
+			
+			res.json(response)
+		}
+
+		if(req.user.role === 'student'){
+			const subject_url = req.params.url
+
+			const subject = await findSubject(db, subject_url)
+			if(!subject) return res.json({error: "wrong subject_url"})
+
+			const works = await getWorks(db, subject_url)
+			if(!works) return res.json({error: "wrong works"})
+
+			const commits = await getCommits(db, subject_url, req.user.id)
+
+			res.json({subject, works, commits})
+		}
 	})
 
 	app.get('/progress/:url/:student_id', async(req, res) => {
@@ -49,6 +72,19 @@ module.exports = function(app, db) {
 		res.json({student, works, commits})
 	})
 
+	app.post('/progress/:url', validate(postSchema), async(req, res) => {
+		const subject_url = req.params.url
+		
+		const { id } = req.user
+		const { work, text, files } = req.body
+
+		console.log(req.body)
+
+		const response = await addCommit(db, work, id, id, text, files)
+		res.json(response)
+
+	})
+
 	app.post('/progress/:url/:student_id', validate(postSchema), async(req, res) => {
 		const [ group_url, subject_url ] = req.params.url.split('_')
 		if(!subject_url) return res.json({error: "wrong subject_url"})
@@ -58,10 +94,8 @@ module.exports = function(app, db) {
 
 		const { mark, work, text, files } = req.body
 
-		console.log(files)
-
 		if(mark){
-			const response = await addCommitMark(db, work, student_id, req.user.id,  text, files, mark)
+			const response = await addCommitMark(db, work, student_id, req.user.id,  text, files, mark+1)
 			res.json(response)
 		}else{
 			const response = await addCommit(db, work, student_id, req.user.id, text, files)
@@ -98,6 +132,36 @@ async function getTeacherSubjectTitles (db, teacher_id){
 	return response.rows
 }
 
+
+async function getStudentSubjects (db, student_id){
+	const response = await db.query(`
+		SELECT 
+			groups.id AS group_id, groups.title AS group_title, groups.url AS group_url,
+			subjects.id AS subject_id, subjects.title AS subject_title, subjects.url AS subject_url,
+			COUNT(works)
+		FROM groups_subjects
+		LEFT JOIN students_groups ON groups_subjects.group_id = students_groups.group_id
+		LEFT JOIN groups ON groups.id = groups_subjects.group_id
+		LEFT JOIN subjects ON subjects.id = groups_subjects.subject_id
+		LEFT JOIN works ON works.subject_id = subjects.id
+		WHERE student_id = $1
+		GROUP BY groups.id, subjects.id
+		ORDER BY groups.title, subjects.title
+	`, [ student_id ])
+
+	return response.rows
+}
+
+async function getStudentGroups (db, student_id){
+	const response = await db.query(`
+		SELECT title, url FROM students_groups
+		LEFT JOIN groups ON group_id = groups.id
+		WHERE student_id = $1 
+	`, [ student_id ] )
+
+	return response.rows
+}
+
 async function getStudents(db, group_url, subject_url) {
 	const response = await db.query(`
 		SELECT users.id, users.name, users.surname, users.id, users.avatar FROM students_groups
@@ -112,6 +176,15 @@ async function getStudents(db, group_url, subject_url) {
 
 async function findStudent(db, student_id){
 	const response = await db.query('SELECT name, surname FROM users WHERE id=$1', [ student_id ])
+	return response.rows[0]
+}
+
+async function findSubject(db, subject_url){
+	const response = await db.query(`
+		SELECT name, surname, avatar, avatar_full, title, description FROM subjects
+		LEFT JOIN users ON users.id = teacher_id
+		WHERE url = $1
+		`, [ subject_url ])
 	return response.rows[0]
 }
 

@@ -48,7 +48,7 @@ module.exports = function(app, db) {
 		const { subject_url, url } = req.params
 		const { type, title, theme, description } = req.body
 		const newUrl = toTranslit(title)
-		
+
 		const response = await db.query(
 			`UPDATE works SET type=$3, title=$4, url=$5, theme=$6, description=$7 WHERE url=$1 AND subject_id=(SELECT id FROM subjects WHERE url=$2) RETURNING url`,
 			[ url, subject_url, type, title, newUrl, theme, description ]
