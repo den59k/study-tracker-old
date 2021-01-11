@@ -3,7 +3,7 @@ const { toTranslit } = require('../libs/translit')
 
 const properties = {
 	type: { type: "string" },
-	title: { type: "string" },
+	title: { type: "string", minLength: 3 },
 	theme: { type: "string" },
 	description: { type: "string" },
 }

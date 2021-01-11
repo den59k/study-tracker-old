@@ -70,7 +70,7 @@ export function getTime(time){
 
 	const delta = Math.floor((Date.now() - time) / 60 / 1000)
 
-	if(delta === 0)
+	if(delta <= 0)
 		return "только что"
 	if(delta === 1)
 		return "минуту назад"

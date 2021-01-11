@@ -2,7 +2,7 @@ const { validate, safe } = require('../libs/validate')
 const { toTranslit } = require('../libs/translit')
 
 const properties = {
-	title: { type: "string" },
+	title: { type: "string", minLength: 3 },
 	description: { type: "string" }
 }
 

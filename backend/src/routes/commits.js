@@ -132,7 +132,6 @@ async function getTeacherSubjectTitles (db, teacher_id){
 	return response.rows
 }
 
-
 async function getStudentSubjects (db, student_id){
 	const response = await db.query(`
 		SELECT 

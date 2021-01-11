@@ -49,6 +49,10 @@ const modalOwnGroups = {
 	subjects: { items: [], type: "check-list", label: "Дисциплины" }
 }
 
+const modalOwnGroupsStudent = {
+	title: { type: "text", label: "Название группы", placeholder: "Группа 21-1б" }
+}
+
 const modalOtherGroups = {
 	subjects: { items: [], type: "check-list", label: "Дисциплины" }
 }
@@ -63,6 +67,10 @@ const groupGroups = {
 const map = item => ({ 
 	...item, 
 	sub: num(item.subjects? item.subjects.length: 0, "предмет", "предмета", "предметов") })
+
+const mapStudent = item => ({ 
+	...item, 
+	sub: num(item.count? item.count: 0, "студент", "студента", "студентов") })
 
 const mapObject = (data, callback) => {
 	const newObj = {}
@@ -88,7 +96,7 @@ export default function GroupsList ({ isStudent }){
 	}
 	
 	const { data } = useSWR(url, GET)
-	const mapData = useMemo(() => data? mapObject(data, map): {}, [ data ])
+	const mapData = useMemo(() => data? mapObject(data, isStudent? mapStudent: map): {}, [ data ])
 
 	const addWork = () => {
 		openModal("Добавление группы", isStudent? modalGroupsStudent: modalGroups, values => {
@@ -105,7 +113,7 @@ export default function GroupsList ({ isStudent }){
 				replace(resp.url, 2)
 			mutate(url)
 		}
-		openModal("Изменение группы", modalOwnGroups, toREST(url+group.url, 'PUT', mutateGroup), group)
+		openModal("Изменение группы", isStudent? modalOwnGroupsStudent: modalOwnGroups, toREST(url+group.url, 'PUT', mutateGroup), group)
 	}
 	
 	const editOtherGroup = (group) => {

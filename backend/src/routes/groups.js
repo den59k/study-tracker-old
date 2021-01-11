@@ -27,8 +27,14 @@ module.exports = function(app, db) {
 
 	app.post('/groups/own', validate(postSchema), async(req, res) => {
 		const { title, subjects } = req.body
-		const response = await createGroup(db, title, subjects, req.user.id)
-		res.json(response)
+		if(req.user.role === 'teacher'){
+			const response = await createTeacherGroup(db, title, subjects, req.user.id)
+			res.json(response)
+		}
+		if(req.user.role === 'student'){
+			const response = await createStudentGroup(db, title, req.user.id)
+			res.json(response)
+		}
 	})
 
 	app.put('/groups/:url', validate(postSchema), async(req, res) => {
@@ -83,15 +89,27 @@ async function getTeacherGroups(db, teacher_id){
 }
 
 async function getUserGroups (db, student_id){
-	const responseMy = await db.query(
-		`SELECT groups.* FROM students_groups LEFT JOIN groups ON group_id = groups.id WHERE student_id = $1`,
-		[ student_id ]
-	)
 
-	return { my: responseMy.rows }
+	const responseOwn = await db.query(`
+		SELECT groups.*, COUNT(students_groups) FROM groups
+		LEFT JOIN students_groups ON group_id = groups.id
+		WHERE captain_id = $1
+		GROUP BY groups.id
+	`, [ student_id ])
+
+	const responseMy = await db.query(`
+		SELECT groups.*, group_counts.count FROM groups
+		LEFT JOIN students_groups ON group_id = groups.id
+		LEFT JOIN (
+			SELECT group_id AS id, COUNT (*) FROM students_groups GROUP BY group_id
+		) group_counts ON group_counts.id = groups.id
+		WHERE student_id = $1 AND captain_id != $1
+	`, [ student_id ]	)
+
+	return { my: responseMy.rows, own: responseOwn.rows }
 }
 
-async function createGroup(db, title, subjects, teacher_id){
+async function createTeacherGroup(db, title, subjects, teacher_id){
 
 	const client = await db.connect()
 
@@ -121,6 +139,24 @@ async function createGroup(db, title, subjects, teacher_id){
 	}
 }
 
+async function createStudentGroup (db, title, user_id){
+	const url = await getUrl(title, db, 'groups')
+
+	const response = await db.query(
+		`INSERT INTO groups VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id`, 
+		[ title, url, user_id, Date.now() ]
+	)
+	const group_id = response.rows[0].id
+
+	//Когда мы создаем группу от студента - мы также добавляем его самого
+	const response2 = await db.query(
+		`INSERT INTO students_groups VALUES ($1, $2)`,
+		[ user_id, group_id ]
+	)
+
+	return { url }
+}
+
 async function editGroup (db, url, title, subjects, teacher_id){
 	const group_response = await db.query('SELECT id, captain_id FROM groups WHERE url = $1', [url])
 	if(group_response.rowCount === 0) return { error: "wrong url" }
@@ -129,7 +165,6 @@ async function editGroup (db, url, title, subjects, teacher_id){
 
 	//Если препод - создатель группы, то изменяем также и название группы. Иначе меняем только предметы
 	if(captain_id === teacher_id){
-
 
 		const deleteResponse = await db.query(`DELETE FROM groups_subjects WHERE group_id = $1 AND subject_id=ANY(
 			SELECT id FROM subjects WHERE teacher_id = $2 AND (array_length($3::int[], 1) IS NULL OR id != ANY ($3))

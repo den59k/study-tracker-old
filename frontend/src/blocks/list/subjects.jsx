@@ -11,7 +11,7 @@ import { num } from 'libs/rus'
 
 const modalSubjects = {
 	title: { type: "text", label: "Название", placeholder: "Дисциплина" },
-	description: { type: "textarea", rows: 5, placeholder: "Краткое описание" }
+	description: { type: "textarea", rows: 5, placeholder: "Краткое описание", checkNull: true }
 }
 
 const map = item => ({ ...item, sub: num(item.count_works, "работа", "работы", "работ")})

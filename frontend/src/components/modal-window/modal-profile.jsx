@@ -1,5 +1,5 @@
 import { REST, toREST } from "libs/fetch"
-import { mutate } from 'swr'
+import { mutate, cache } from 'swr'
 
 import { modal, ModalForm } from "components/modal-window"
 
@@ -14,7 +14,11 @@ export function ModalProfile ({user}){
 	
 	const logout = async () => {
 		const resp = await REST('/api/login', {}, 'DELETE')
-		if(resp.success) mutate('/api')
+		if(resp.success){
+			mutate('/api')
+			cache.clear()
+		}
+
 	}
 
 	return (

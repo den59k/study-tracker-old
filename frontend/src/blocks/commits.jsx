@@ -50,6 +50,8 @@ export default function Commits ({isStudent}){
 
 	const { data } = useSWR(url, GET)
 
+	console.log(data)
+
 	modalCommitStudent.work.items = modalCommit.work.items = useMemo(() => mapWorks(data && data.works), [ data ])
 	modalCommitStudent.work.onChange = modalCommit.work.onChange = (val, form) => {
 		form.onChange({ selectedWork: data.works.find(item => item.id === val)?.title })
