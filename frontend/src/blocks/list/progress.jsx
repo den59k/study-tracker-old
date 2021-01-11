@@ -10,7 +10,7 @@ const map = item => ({
 	...item, 
 	id: item.subject_id+'-'+item.group_id, 
 	title: item.subject_title,
-	sub: num(item.count, 'работа', 'работы', 'работ')
+	sub: num(item.count, 'работа', 'работы', 'работ') + ' / ' + item.handed_count + ' сдано'
 })
 
 function mapObject (data) {

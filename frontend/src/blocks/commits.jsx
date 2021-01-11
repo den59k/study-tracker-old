@@ -25,6 +25,13 @@ const modalCommit = {
 	files: { type: "file", label: "Прикрепленный файл" },
 }
 
+const modalCommitStudent = {
+	work: { type: "works" },
+	selectedWork: { type: "label-mutable", label: "Выбранная работа: ", defaultValue: "Не выбрано" },
+	files: { type: "file", label: "Прикрепленный файл" },
+	text: { type: "textarea", rows: 5, placeholder: "Комментарий по данной работе..." },
+}
+
 function mapWorks(works){
 	const obj = {}
 	if(!works) return obj
@@ -43,8 +50,8 @@ export default function Commits ({isStudent}){
 
 	const { data } = useSWR(url, GET)
 
-	modalCommit.work.items = useMemo(() => mapWorks(data && data.works), [ data ])
-	modalCommit.work.onChange = (val, form) => {
+	modalCommitStudent.work.items = modalCommit.work.items = useMemo(() => mapWorks(data && data.works), [ data ])
+	modalCommitStudent.work.onChange = modalCommit.work.onChange = (val, form) => {
 		form.onChange({ selectedWork: data.works.find(item => item.id === val)?.title })
 	}
 
@@ -53,7 +60,7 @@ export default function Commits ({isStudent}){
 	}
 		
 	const openCommitModal = () => {
-		openModal("Оценить работу", modalCommit, toREST(url, 'POST'), { mark: 0 })
+		openModal("Оценить работу", isStudent === true?modalCommitStudent: modalCommit, toREST(url, 'POST'), { mark: 0 })
 	}
 
 	if(!data || data.error) return <div className="list commits"></div>
@@ -67,7 +74,11 @@ export default function Commits ({isStudent}){
 					<h3>{data.student.surname + ' '+ data.student.name}</h3>
 				)}
 			</div>
-			<button className="button-filled" onClick={openCommitModal}><IoCreateOutline/>Оценить работу</button>
+			
+			<button className="button-filled" onClick={openCommitModal}>
+				<IoCreateOutline/>
+				{isStudent === true?'Отправить работу': 'Оценить работу'}
+			</button>
 			<ul>
 			{ data && data.commits && data.commits.map(commit => <Commit key={commit.id} {...commit}/>) }
 			</ul>
@@ -88,7 +99,8 @@ function Commit ({ title, name, surname, avatar, files, text, timestep, mark }){
 				<a className="file-link" key={file} href={file.src} download={file.name}><IoAttach/>{file.name}</a>
 			))}
 			<div className="commit-profile">
-				<div>{name + ' ' + surname}</div>
+				<div>{name}</div>
+				<img src={avatar || "/images/icon.svg"} alt={name}/>
 			</div>
 		</li>
 	)

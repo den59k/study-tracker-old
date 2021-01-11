@@ -138,13 +138,18 @@ async function getStudentSubjects (db, student_id){
 		SELECT 
 			groups.id AS group_id, groups.title AS group_title, groups.url AS group_url,
 			subjects.id AS subject_id, subjects.title AS subject_title, subjects.url AS subject_url,
-			COUNT(works)
+			COUNT(works), COUNT (commits) AS handed_count
 		FROM groups_subjects
 		LEFT JOIN students_groups ON groups_subjects.group_id = students_groups.group_id
 		LEFT JOIN groups ON groups.id = groups_subjects.group_id
 		LEFT JOIN subjects ON subjects.id = groups_subjects.subject_id
 		LEFT JOIN works ON works.subject_id = subjects.id
-		WHERE student_id = $1
+		LEFT JOIN (
+			SELECT DISTINCT ON (work_id) work_id FROM commits
+			WHERE student_id = $1 AND mark IS NOT NULL
+			ORDER BY work_id, timestep DESC
+		) AS commits ON commits.work_id = works.id
+		WHERE students_groups.student_id = $1
 		GROUP BY groups.id, subjects.id
 		ORDER BY groups.title, subjects.title
 	`, [ student_id ])
