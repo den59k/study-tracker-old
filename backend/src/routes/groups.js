@@ -144,8 +144,8 @@ async function editGroup (db, url, title, subjects, teacher_id){
 	}
 }
 
-async function deleteGroup (db, id, captain_id){
-	const response = await db.query('DELETE FROM groups WHERE id=$1 AND captain_id=$2', [ id, captain_id ])
+async function deleteGroup (db, id){
+	const response = await db.query('DELETE FROM groups WHERE id=$1', [ id ])
 	if(response.rowCount > 0)
 		await db.query('DELETE FROM groups_subjects WHERE group_id=$1', [ id ])
 

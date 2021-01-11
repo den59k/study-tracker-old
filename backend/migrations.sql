@@ -36,7 +36,7 @@ CREATE TABLE subjects (
 	url text,
 	description text,
 	creation_time bigint,
-	creator_id bigint
+	teacher_id bigint
 );
 
 CREATE UNIQUE INDEX ON subjects (url);
@@ -72,7 +72,7 @@ CREATE TABLE groups_subjects (
 	group_id int,
 	subject_id int,
 	PRIMARY KEY ( group_id, subject_id )
-)
+);
 
 CREATE TABLE groups_teacher (
 	teacher_id bigint,
@@ -106,3 +106,6 @@ CREATE TABLE commits (
 	timestep bigint,
 	mark smallint
 );
+
+
+
