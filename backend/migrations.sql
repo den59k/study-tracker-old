@@ -80,13 +80,6 @@ CREATE TABLE groups_teacher (
 	PRIMARY KEY (teacher_id, group_id)
 );
 
-CREATE TABLE groups_requests (
-	teacher_id bigint,
-	captain_id bigint,
-	request_time bigint,
-	PRIMARY KEY (teacher_id, captain_id)
-);
-
 CREATE TABLE students_groups (
 	student_id bigint,
 	group_id int,

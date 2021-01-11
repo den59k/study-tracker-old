@@ -43,6 +43,8 @@ module.exports = (app, db) => {
 
 			if(existsResponse.rowCount > 0){
 				
+				await addUserToGroup(db, existsResponse.rows[0].user_id, group_id)
+
 			}else{
 				if(!name || !surname) return res.json({email: "Пользователя не существует"})
 

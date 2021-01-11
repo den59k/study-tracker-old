@@ -37,7 +37,7 @@ export default function RegisterPage() {
 			<h1>StudyTracker</h1>
 			<form className="form text-center label-min" onSubmit={onSubmit}>
 				<h2>Получите доступ к работе,<br/> создав свой аккаунт прямо сейчас</h2>
-				<Input name="email" form={form} label="Email" placeholder="Ваш логин"/>
+				<Input name="email" form={form} label="Email" placeholder="Ваш email"/>
 				<Input name="name"  label="Имя"  form={form} placeholder="Ваше имя"/>
 				<Input name="surname" label="Фамилия"  form={form} placeholder="Ваша фамилия"/>
 				<Segment name="role" options={roles} form={form}/>

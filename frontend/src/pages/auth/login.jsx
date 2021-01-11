@@ -24,7 +24,7 @@ export default function LoginPage() {
 			<h1>StudyTracker</h1>
 			<h2 className="text-center">Войдите в ваш аккаунт, чтобы<br/>получить доступ к учебной работе</h2>
 			<form className="form thin text-center" style={{marginTop: "15px"}} onSubmit={onSubmit}>
-				<Input name="email" form={form} className="filled"  placeholder="Логин"/>
+				<Input name="email" form={form} className="filled"  placeholder="Email"/>
 				<Input name="password" type="password"  form={form} className="filled" placeholder="Пароль"/>
 				<button className="button-stroked">Войти</button>
 				

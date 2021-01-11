@@ -55,6 +55,12 @@ module.exports = function(app, db) {
 		if(captain_id === req.user.id){
 			const response = await deleteGroup(db, id)
 			return res.json(response)
+		} else {
+			//Если это студент - то он выходит из группы
+			if(req.user.role === 'student'){
+				const response = await exitGroup(db, id, req.user.id)
+				return res.json(response)
+			}
 		}
 
 		res.json({some: "thing"})
@@ -81,11 +87,7 @@ async function getTeacherGroups(db, teacher_id){
 		WHERE captain_id IS DISTINCT FROM $1
 	`, [ teacher_id ])
 
-	const responseRequest = await db.query(`
-		SELECT * FROM groups_requests WHERE teacher_id = $1
-	`, [ teacher_id ])
-
-	return { own: responseOwn.rows, other: responseOther.rows, requests: responseRequest.rows }
+	return { own: responseOwn.rows, other: responseOther.rows }
 }
 
 async function getUserGroups (db, student_id){
@@ -183,6 +185,15 @@ async function deleteGroup (db, id){
 	const response = await db.query('DELETE FROM groups WHERE id=$1', [ id ])
 	if(response.rowCount > 0)
 		await db.query('DELETE FROM groups_subjects WHERE group_id=$1', [ id ])
+
+	return { count: response.rowCount }
+}
+
+async function exitGroup (db, group_id, student_id){
+	const response = await db.query(
+		'DELETE FROM students_groups WHERE student_id = $1 AND group_id = $2',
+		[ student_id, group_id ]
+	)
 
 	return { count: response.rowCount }
 }

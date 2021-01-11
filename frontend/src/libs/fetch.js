@@ -34,8 +34,6 @@ export const REST = async (url, body, method) => {
 export const toREST = (url, method, _mutate) => {
 	return async (values) => {
 
-		console.log(values)
-
 		const resp = await REST(url, values || {}, method || 'POST')
 		if(resp.error) return 
 		closeModal()
