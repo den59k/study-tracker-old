@@ -16,6 +16,7 @@ const modalSubjects = {
 	description: { type: "textarea", rows: 5, placeholder: "Краткое описание", checkNull: true }
 }
 
+
 const map = item => ({ ...item, sub: item.theme })
 
 export default function LabsList (){

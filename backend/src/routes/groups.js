@@ -3,10 +3,13 @@ const { getUrl } = require('../libs/translit')
 
 const properties = {
 	title: { type: "string" },
-	subjects: { type: "array" }
+	subjects: { type: "array" },
+	email: { type: "string" }
 }
 
 const postSchema = { properties, required: [ "title" ] }
+const postOtherSchema = { properties, required: [ 'email' ] }
+const schema = { properties }
 
 module.exports = function(app, db) {
 
@@ -37,11 +40,30 @@ module.exports = function(app, db) {
 		}
 	})
 
-	app.put('/groups/:url', validate(postSchema), async(req, res) => {
+	app.post('/groups/other', validate(postOtherSchema), async(req, res) => {
+		const { email } = req.body
+
+		if(req.user.role === 'teacher'){
+			const response = await addGroupFromCaptain(db, req.user.id, email)
+			return res.json(response)
+		}
+
+		res.json({count: 1})
+	})
+
+	app.put('/groups/:url', validate(schema), async(req, res) => {
 		const { title, subjects } = req.body
 		const { url } = req.params
-		const response = await editGroup(db, url, title, subjects, req.user.id)
-		res.json(response)
+		if(req.user.role === 'teacher'){
+			const response = await editGroup(db, url, title, req.user.id, subjects)
+			res.json(response)
+		}
+
+		if(req.user.role === 'student'){
+			const response = await editGroup(db, url, title, req.user.id)
+			res.json(response)
+		}
+		
 	})
 
 	app.delete('/groups/:url', async(req, res) => {
@@ -82,9 +104,15 @@ async function getTeacherGroups(db, teacher_id){
 	`, [ teacher_id ])
 
 	const responseOther = await db.query(`
-		SELECT groups.* FROM groups 
-		LEFT JOIN groups_teacher ON groups.id = groups_teacher.group_id
-		WHERE captain_id IS DISTINCT FROM $1
+		SELECT groups.*, array_remove(array_agg(subject_id), NULL) AS subjects FROM groups 
+		LEFT JOIN (
+			SELECT groups_subjects.* FROM groups_subjects 
+			LEFT JOIN subjects ON subjects.id = subject_id
+			WHERE teacher_id = $1
+		) groups_subjects ON groups_subjects.group_id = groups.id
+		LEFT JOIN groups_teachers ON groups.id = groups_teachers.group_id
+		WHERE captain_id != $1 AND teacher_id = $1
+		GROUP BY groups.id
 	`, [ teacher_id ])
 
 	return { own: responseOwn.rows, other: responseOther.rows }
@@ -159,15 +187,20 @@ async function createStudentGroup (db, title, user_id){
 	return { url }
 }
 
-async function editGroup (db, url, title, subjects, teacher_id){
-	const group_response = await db.query('SELECT id, captain_id FROM groups WHERE url = $1', [url])
+async function editGroup (db, url, title, teacher_id, subjects){
+	const group_response = await db.query('SELECT id, captain_id, title FROM groups WHERE url = $1', [url])
 	if(group_response.rowCount === 0) return { error: "wrong url" }
 
-	const { id, captain_id } = group_response.rows[0]
+	const { id, captain_id, title: oldTitle } = group_response.rows[0]
 
 	//Если препод - создатель группы, то изменяем также и название группы. Иначе меняем только предметы
-	if(captain_id === teacher_id){
+	if(captain_id === teacher_id && oldTitle !== title && title.length > 2){
+		url = await getUrl(title, db, 'groups')
 
+		await db.query('UPDATE groups SET title = $2, url=$3 WHERE id=$1', [ id, title, url ])
+	}
+
+	if(subjects){
 		const deleteResponse = await db.query(`DELETE FROM groups_subjects WHERE group_id = $1 AND subject_id=ANY(
 			SELECT id FROM subjects WHERE teacher_id = $2 AND (array_length($3::int[], 1) IS NULL OR id != ANY ($3))
 		)`, [ id, teacher_id, subjects ])
@@ -177,8 +210,31 @@ async function editGroup (db, url, title, subjects, teacher_id){
 			[ id, subjects ]
 		)
 
-		return { deleted: deleteResponse.rowCount, inserted: insertResponse.rowCount }
+		//return { deleted: deleteResponse.rowCount, inserted: insertResponse.rowCount }
 	}
+
+	return { url }
+}
+
+async function addGroupFromCaptain (db, teacher_id, email) {
+	
+	const group_response = await db.query(`
+		SELECT groups.id FROM groups
+		LEFT JOIN accounts ON accounts.user_id = groups.captain_id
+		WHERE email = $1
+	`, [ email ])
+
+
+
+	if(group_response.rowCount === 0) return res.json({error: "wrong email"})
+
+	const { id } = group_response.rows[0]
+
+	const response = await db.query(`
+		INSERT INTO groups_teachers VALUES ($1, $2)
+	`, [ id, teacher_id ])
+
+	return { count: response.rowCount }
 }
 
 async function deleteGroup (db, id){

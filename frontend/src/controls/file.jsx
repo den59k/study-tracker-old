@@ -28,7 +28,7 @@ export default function FileControl ({label, form, name}){
 			{label && <label>{label}</label>}
 			<div className="files-list">
 				{values.map(item => (
-					<div className="file-item">
+					<div className="file-item" key={item.src}>
 						<IoDocument/>{item.name}
 						<button className="delete-button" title="Отменить отправку файла" onClick={() => deleteFile(item.src)}>
 							<IoCloseOutline/>

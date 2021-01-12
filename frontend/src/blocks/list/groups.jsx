@@ -103,14 +103,16 @@ export default function GroupsList ({ isStudent }){
 			let _url
 			if(values.tab === 'own')	_url = '/api/groups/own'
 			if(values.tab === 'other')	_url = '/api/groups/other'
-			toREST(_url, 'POST', url)(values)
+
+			if(url)	toREST(_url, 'POST', url)(values)
+
 		}, { tab: "own" })
 	}
 
 	const editOwnGroup = (group) => {
 		const mutateGroup = (resp) => {
 			if(group.url === selected)
-				replace(resp.url, 2)
+				replace(resp.url, 1)
 			mutate(url)
 		}
 		openModal("Изменение группы", isStudent? modalOwnGroupsStudent: modalOwnGroups, toREST(url+group.url, 'PUT', mutateGroup), group)
