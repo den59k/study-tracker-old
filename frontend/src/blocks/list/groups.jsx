@@ -66,7 +66,7 @@ const groupGroups = {
 
 const map = item => ({ 
 	...item, 
-	sub: num(item.subjects? item.subjects.length: 0, "предмет", "предмета", "предметов") })
+	sub: 'Изучает ' + num(item.subjects? item.subjects.length: 0, "ваш предмет", "ваших предмета", "ваших предметов") })
 
 const mapStudent = item => ({ 
 	...item, 

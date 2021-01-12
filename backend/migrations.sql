@@ -74,7 +74,7 @@ CREATE TABLE groups_subjects (
 	PRIMARY KEY ( group_id, subject_id )
 );
 
-CREATE TABLE groups_teacher (
+CREATE TABLE groups_teachers (
 	group_id int,
 	teacher_id bigint,
 	PRIMARY KEY (group_id, teacher_id)

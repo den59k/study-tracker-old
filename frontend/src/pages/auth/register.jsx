@@ -18,9 +18,14 @@ export default function RegisterPage() {
 		e.preventDefault()
 		const values = form.values.toObject()
 		const resp = await REST('/api/register',values , 'POST')
-		console.log(resp)
+		
+		if(resp.error) 
+			if(typeof(resp.error) === 'object')
+				return form.setErrors(resp.error)
+
 		if(!resp.error)
 			setSuccess(values)
+			
 	}
 
 	if(success)
