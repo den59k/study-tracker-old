@@ -45,7 +45,7 @@ module.exports = function(app, db) {
 			const subject = await findSubject(db, subject_url)
 			if(!subject) return res.json({error: "wrong subject_url"})
 
-			const works = await getWorks(db, subject_url)
+			const works = await getWorks(db, subject_url, req.user.id)
 			if(!works) return res.json({error: "wrong works"})
 
 			const commits = await getCommits(db, subject_url, req.user.id)
@@ -64,7 +64,7 @@ module.exports = function(app, db) {
 		const student = await findStudent(db, student_id)
 		if(!student) return res.json({error: "wrong student"})
 
-		const works = await getWorks(db, subject_url)
+		const works = await getWorks(db, subject_url, student_id)
 		if(!works) return res.json({error: "wrong works"})
 		
 		const commits = await getCommits(db, subject_url, student_id)
@@ -192,12 +192,18 @@ async function findSubject(db, subject_url){
 	return response.rows[0]
 }
 
-async function getWorks(db, subject_url){
+async function getWorks(db, subject_url, student_id){
 	const response = await db.query(`
-		SELECT works.id, works.title FROM works 
+		SELECT works.id, works.title, mark, mark IS NOT NULL AS handed FROM works 
 		LEFT JOIN subjects ON subject_id = subjects.id
+		LEFT JOIN (
+			SELECT DISTINCT ON (work_id) work_id, mark FROM commits
+			WHERE student_id = $2 AND mark IS NOT NULL
+			ORDER BY work_id, timestep DESC
+		) AS commits ON commits.work_id = works.id
 		WHERE subjects.url=$1
-	`, [ subject_url ])
+		ORDER BY handed, works.creation_time
+	`, [ subject_url, student_id ])
 
 	return response.rows
 }

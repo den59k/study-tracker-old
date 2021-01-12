@@ -1,10 +1,12 @@
+import { useState, useMemo } from 'react'
 import { openModal } from 'components/modal-window'
 import useSWR from 'swr'
 import { GET, toREST } from 'libs/fetch'
-import { useMemo } from 'react'
 import { shorten, getTime } from 'libs/rus'
 import { useLocation } from 'components/router'
 import cn from 'classnames'
+
+import { Set } from 'immutable'
 
 import { IoCreateOutline, IoAttach } from 'react-icons/io5'
 
@@ -14,6 +16,15 @@ const markComments = [
 	'Удволетворительно',
 	'Хорошо',
 	'Отлично'
+]
+
+const markCommentsShorten = [
+	'',
+	'',
+	'Неуд',
+	'Удв',
+	'Хор',
+	'Отл'
 ]
 
 const modalCommit = {
@@ -44,13 +55,18 @@ function mapWorks(works){
 
 export default function Commits ({isStudent}){
 	
+	const [ selectedWork, setSelectedWork ] = useState(-1)
 	const { get } = useLocation()
 
 	const url = isStudent === true?'/api/progress/'+get(1): '/api/progress/'+get(1)+'/'+get(2)+'/'
 
 	const { data } = useSWR(url, GET)
 
-	console.log(data)
+	const commits = data? data.commits: []
+	const filterCommits = useMemo(
+		() => selectedWork < 0?commits: commits.filter(commit => selectedWork === commit.work_id) , 
+		[ commits, selectedWork ]
+	)
 
 	modalCommitStudent.work.items = modalCommit.work.items = useMemo(() => mapWorks(data && data.works), [ data ])
 	modalCommitStudent.work.onChange = modalCommit.work.onChange = (val, form) => {
@@ -62,10 +78,23 @@ export default function Commits ({isStudent}){
 	}
 		
 	const openCommitModal = () => {
-		openModal("Оценить работу", isStudent === true?modalCommitStudent: modalCommit, toREST(url, 'POST'), { mark: 0 })
+		openModal(
+			"Оценить работу", isStudent === true?modalCommitStudent: modalCommit, 
+			toREST(url, 'POST'), 
+			{ mark: 0, work: selectedWork < 0? undefined: selectedWork }
+		)
 	}
 
 	if(!data || data.error) return <div className="list commits"></div>
+
+	
+	const selectLab = (lab_id) => {
+		if(selectedWork == lab_id)
+			setSelectedWork(-1)
+		else
+			setSelectedWork(lab_id)
+	}
+
 
 	return (
 		<div className="list commits">
@@ -77,12 +106,31 @@ export default function Commits ({isStudent}){
 				)}
 			</div>
 			
+			<div className="label">Работы по предмету</div>
+			<div className="works-control">
+				{ data.works.filter(item => !item.handed).map(lab => (
+					<button className={cn(selectedWork === lab.id && "active")} key={lab.id} title={lab.title} onClick={() => selectLab(lab.id)}>
+						{shorten(lab.title)}
+					</button>
+				)) }
+			</div>
+				
+			<div className="label">Сданные работы</div>
+			<div className="works-control">
+				{ data.works.filter(item => item.handed).map(lab => (
+					<button className={cn(selectedWork === lab.id && "active")} key={lab.id} title={lab.title} onClick={() => selectLab(lab.id)}>
+						{shorten(lab.title) + ' (' + markCommentsShorten[lab.mark] + '.)'}
+					</button>
+				)) }
+			</div>
+
 			<button className="button-filled" onClick={openCommitModal}>
 				<IoCreateOutline/>
 				{isStudent === true?'Отправить работу': 'Оценить работу'}
 			</button>
+
 			<ul>
-			{ data && data.commits && data.commits.map(commit => <Commit key={commit.id} {...commit}/>) }
+			{ filterCommits.map(commit => <Commit key={commit.id} {...commit}/>) }
 			</ul>
 		</div>
 	)
