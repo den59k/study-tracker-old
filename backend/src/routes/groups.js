@@ -41,10 +41,11 @@ module.exports = function(app, db) {
 	})
 
 	app.post('/groups/other', validate(postOtherSchema), async(req, res) => {
-		const { email } = req.body
+		const { email, subjects } = req.body
 
 		if(req.user.role === 'teacher'){
-			const response = await addGroupFromCaptain(db, req.user.id, email)
+			const response = await addGroupFromCaptain(db, req.user.id, email, subjects)
+
 			return res.json(response)
 		}
 
@@ -81,6 +82,11 @@ module.exports = function(app, db) {
 			//Если это студент - то он выходит из группы
 			if(req.user.role === 'student'){
 				const response = await exitGroup(db, id, req.user.id)
+				return res.json(response)
+			}
+
+			if(req.user.role === 'teacher'){
+				const response = await exitTeacherGroup(db, id, req.user.id)
 				return res.json(response)
 			}
 		}
@@ -216,15 +222,13 @@ async function editGroup (db, url, title, teacher_id, subjects){
 	return { url }
 }
 
-async function addGroupFromCaptain (db, teacher_id, email) {
+async function addGroupFromCaptain (db, teacher_id, email, subjects) {
 	
 	const group_response = await db.query(`
 		SELECT groups.id FROM groups
 		LEFT JOIN accounts ON accounts.user_id = groups.captain_id
 		WHERE email = $1
 	`, [ email ])
-
-
 
 	if(group_response.rowCount === 0) return res.json({error: "wrong email"})
 
@@ -234,13 +238,20 @@ async function addGroupFromCaptain (db, teacher_id, email) {
 		INSERT INTO groups_teachers VALUES ($1, $2)
 	`, [ id, teacher_id ])
 
+	if(subjects && subjects.length > 0){
+		const responseSubjects = await db.query (
+			`INSERT INTO groups_subjects (SELECT $1 AS group_id, unnest($2::int[]) AS subject_id)`,
+			[ id, subjects ]
+		)
+	}
+
 	return { count: response.rowCount }
 }
 
-async function deleteGroup (db, id){
-	const response = await db.query('DELETE FROM groups WHERE id=$1', [ id ])
+async function deleteGroup (db, group_id){
+	const response = await db.query('DELETE FROM groups WHERE id=$1', [ group_id ])
 	if(response.rowCount > 0)
-		await db.query('DELETE FROM groups_subjects WHERE group_id=$1', [ id ])
+		await db.query('DELETE FROM groups_subjects WHERE group_id=$1', [ group_id ])
 
 	return { count: response.rowCount }
 }
@@ -250,6 +261,18 @@ async function exitGroup (db, group_id, student_id){
 		'DELETE FROM students_groups WHERE student_id = $1 AND group_id = $2',
 		[ student_id, group_id ]
 	)
+
+	return { count: response.rowCount }
+}
+
+async function exitTeacherGroup (db, group_id, teacher_id){
+	const response = await db.query(
+		'DELETE FROM groups_teachers WHERE group_id = $1 AND teacher_id = $2',
+		[ group_id, teacher_id ]
+	)
+
+	if(response.rowCount > 0)
+		await db.query('DELETE FROM groups_subjects WHERE group_id=$1', [ group_id ])
 
 	return { count: response.rowCount }
 }
